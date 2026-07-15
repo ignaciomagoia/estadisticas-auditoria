@@ -4,7 +4,6 @@ import type { OperatorShiftMatchReport, ShiftAuditRecord, ShiftCode } from '../.
 import {
   applyCompatibleOperatorFiltersForShifts,
   applyShiftFilters,
-  EMPTY_SHIFT_FILTERS,
   getShiftKpis,
   getShiftOperatorSummaries,
   getShiftReasonCounts,
@@ -13,6 +12,7 @@ import {
   getShiftSummariesByNoveltyVolume,
   getShiftsForReason,
 } from '../../domain/shift-metrics';
+import type { ShiftFilterState } from '../../domain/shift-metrics';
 import { formatNumber } from '../../utils/formatters';
 import { ChartCard } from '../charts/ChartCard';
 import { ShiftFilterBar } from './ShiftFilterBar';
@@ -25,10 +25,12 @@ interface ShiftViewProps {
   records: ShiftAuditRecord[];
   matchReport: OperatorShiftMatchReport;
   globalFilters: FilterState;
+  filters: ShiftFilterState;
+  onFiltersChange: (filters: ShiftFilterState) => void;
+  onFiltersReset: () => void;
 }
 
-export const ShiftView = ({ records, matchReport, globalFilters }: ShiftViewProps) => {
-  const [filters, setFilters] = useState(EMPTY_SHIFT_FILTERS);
+export const ShiftView = ({ records, matchReport, globalFilters, filters, onFiltersChange, onFiltersReset }: ShiftViewProps) => {
   const [selectedShiftForReasons, setSelectedShiftForReasons] = useState<ShiftCode | ''>('');
   const [selectedReason, setSelectedReason] = useState('');
   const [detailShift, setDetailShift] = useState<ShiftCode | null>(null);
@@ -59,7 +61,7 @@ export const ShiftView = ({ records, matchReport, globalFilters }: ShiftViewProp
 
   return (
     <>
-      <ShiftFilterBar records={compatibleRecords} filters={filters} onChange={setFilters} onReset={() => setFilters(EMPTY_SHIFT_FILTERS)} />
+      <ShiftFilterBar records={compatibleRecords} filters={filters} onChange={onFiltersChange} onReset={onFiltersReset} />
       {filteredRecords.length === 0 ? (
         <section className="rounded-lg border border-slate-200 bg-white p-5 text-slate-700 shadow-sm">No hay auditorias asociadas a turnos para los filtros seleccionados.</section>
       ) : (
@@ -83,7 +85,7 @@ export const ShiftView = ({ records, matchReport, globalFilters }: ShiftViewProp
               <select
                 value={activeShiftForReasons}
                 onChange={(event) => setSelectedShiftForReasons(event.target.value as ShiftCode)}
-                className="h-10 rounded-md border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100 md:w-52"
+                className="pdf-hide h-10 rounded-md border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100 md:w-52"
               >
                 {summaries.map((summary) => (
                   <option key={summary.shift} value={summary.shift}>
@@ -106,7 +108,7 @@ export const ShiftView = ({ records, matchReport, globalFilters }: ShiftViewProp
               <select
                 value={activeReason}
                 onChange={(event) => setSelectedReason(event.target.value)}
-                className="h-10 rounded-md border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100 md:w-80"
+                className="pdf-hide h-10 rounded-md border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100 md:w-80"
               >
                 {availableReasons.map((reason) => (
                   <option key={reason} value={reason}>
@@ -121,7 +123,7 @@ export const ShiftView = ({ records, matchReport, globalFilters }: ShiftViewProp
           </section>
 
           <ShiftTable rows={summaries} onSelectShift={setDetailShift} />
-          <details className="rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-600 shadow-sm">
+          <details className="pdf-hide rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-600 shadow-sm">
             <summary className="cursor-pointer font-semibold text-slate-900">Calidad de asociacion de nombres</summary>
             <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
               <span>Operadores auditados: {formatNumber(matchReport.totalAuditOperators)}</span>

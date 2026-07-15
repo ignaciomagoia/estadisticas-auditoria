@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { AlertTriangle, Loader2 } from 'lucide-react';
 import { CompareMonthsPlaceholder } from './components/comparison/CompareMonthsPlaceholder';
+import { DownloadPdfButton } from './components/export/DownloadPdfButton';
 import { ComplementaryChartsSection } from './components/charts/ComplementaryChartsSection';
 import { PriorityChartsSection } from './components/charts/PriorityChartsSection';
 import { ValidationRankingSection } from './components/charts/ValidationRankingSection';
@@ -14,6 +15,7 @@ import { ReasonInsightsSection } from './components/operator/ReasonInsightsSecti
 import { OperatorTable } from './components/table/OperatorTable';
 import { ShiftView } from './components/shift-view/ShiftView';
 import { attachShiftsToAuditRecords, matchOperatorsToShifts } from './data/operator-shift-matcher';
+import { EMPTY_SHIFT_FILTERS, type ShiftFilterState } from './domain/shift-metrics';
 import { useAuditDataset } from './hooks/useAuditDataset';
 import { useShiftRoster } from './hooks/useShiftRoster';
 import { applyAuditFilters, applyAuditFiltersWithoutAction, EMPTY_FILTERS } from './services/filterService';
@@ -39,7 +41,18 @@ const EMPTY_SHIFT_REPORT: OperatorShiftMatchReport = {
   excludedAuditRanking: [],
 };
 
+const slugify = (value: string) =>
+  value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase('es-AR')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+
+const formatFilterSummary = (entries: Array<[string, string]>) => entries.filter(([, value]) => Boolean(value)).map(([label, value]) => `${label}: ${value}`);
+
 const App = () => {
+  const pdfContentRef = useRef<HTMLDivElement | null>(null);
   const { dataset, periods, selectedPeriod, selectedPeriodId, setSelectedPeriodId, isLoading, error } = useAuditDataset();
   const { roster, isLoading: isRosterLoading, error: rosterError } = useShiftRoster();
   const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS);
@@ -47,6 +60,7 @@ const App = () => {
   const [minimumAudits, setMinimumAudits] = useState(10);
   const [viewMode, setViewMode] = useState<ViewMode>('operators');
   const [analysisMode, setAnalysisMode] = useState<AnalysisMode>('monthly');
+  const [shiftFilters, setShiftFilters] = useState<ShiftFilterState>(EMPTY_SHIFT_FILTERS);
 
   const allRecords = dataset?.records ?? [];
   const filteredRecords = useMemo(() => applyAuditFilters(allRecords, filters), [allRecords, filters]);
@@ -59,6 +73,27 @@ const App = () => {
   const shiftMatchReport = useMemo(() => (roster ? matchOperatorsToShifts(allRecords, roster.members) : EMPTY_SHIFT_REPORT), [allRecords, roster]);
   const shiftRecords = useMemo(() => attachShiftsToAuditRecords(allRecords, shiftMatchReport), [allRecords, shiftMatchReport]);
   const isShiftViewDisabled = isRosterLoading || Boolean(rosterError) || !roster;
+  const periodLabel = dataset?.meta.monthLabel ?? selectedPeriod?.monthLabel ?? 'Periodo';
+  const viewLabel = analysisMode === 'compare' ? 'Comparacion' : viewMode === 'operators' ? 'Operadores' : 'Turnos';
+  const filtersSummary = useMemo(() => {
+    if (analysisMode === 'compare') return [];
+    if (viewMode === 'operators') {
+      return formatFilterSummary([
+        ['Operador', filters.operator],
+        ['Auditor', filters.auditor],
+        ['Accion', filters.action],
+        ['Sistema', filters.affectedSystem],
+        ['Motivo', filters.correctionReason],
+      ]);
+    }
+    return formatFilterSummary([
+      ['Turno', shiftFilters.shift ? `Turno ${shiftFilters.shift}` : ''],
+      ['Auditor', shiftFilters.auditor || filters.auditor],
+      ['Sistema', shiftFilters.affectedSystem || filters.affectedSystem],
+      ['Motivo', shiftFilters.correctionReason || filters.correctionReason],
+    ]);
+  }, [analysisMode, filters, shiftFilters, viewMode]);
+  const pdfFileName = `auditorias-${slugify(periodLabel)}-${analysisMode === 'compare' ? 'comparacion' : viewMode === 'operators' ? 'operadores' : 'turnos'}.pdf`;
 
   useEffect(() => {
     if (isShiftViewDisabled && viewMode === 'shifts') setViewMode('operators');
@@ -105,6 +140,16 @@ const App = () => {
         analysisMode={analysisMode}
         onAnalysisModeChange={setAnalysisMode}
         isShiftViewDisabled={isShiftViewDisabled}
+        exportButton={
+          <DownloadPdfButton
+            targetRef={pdfContentRef}
+            periodLabel={periodLabel}
+            viewLabel={viewLabel}
+            filtersSummary={filtersSummary}
+            fileName={pdfFileName}
+            disabled={isLoading || Boolean(error)}
+          />
+        }
       />
 
       {isLoading ? (
@@ -126,7 +171,7 @@ const App = () => {
           </div>
         </section>
       ) : (
-        <>
+        <div ref={pdfContentRef} className="grid gap-6">
           {analysisMode === 'compare' ? (
             <CompareMonthsPlaceholder periods={periods} />
           ) : viewMode === 'operators' ? (
@@ -147,9 +192,16 @@ const App = () => {
               <ComplementaryChartsSection records={filteredRecords} rankingRecords={rankingRecords} />
             </>
           ) : (
-            <ShiftView records={shiftRecords} matchReport={shiftMatchReport} globalFilters={filters} />
+            <ShiftView
+              records={shiftRecords}
+              matchReport={shiftMatchReport}
+              globalFilters={filters}
+              filters={shiftFilters}
+              onFiltersChange={setShiftFilters}
+              onFiltersReset={() => setShiftFilters(EMPTY_SHIFT_FILTERS)}
+            />
           )}
-        </>
+        </div>
       )}
     </PageShell>
   );

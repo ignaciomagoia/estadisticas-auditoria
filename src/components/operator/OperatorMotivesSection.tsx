@@ -23,7 +23,7 @@ export const OperatorMotivesSection = ({ records, summaries }: OperatorMotivesSe
           <h2 className="text-base font-semibold text-slate-950">Motivos de correccion por operador</h2>
           <p className="mt-1 text-sm text-slate-500">Motivos tomados solo de casos corregidos y observados.</p>
         </div>
-        <label className="flex flex-col gap-1 text-sm font-medium text-slate-700 md:w-80">
+        <label className="pdf-hide flex flex-col gap-1 text-sm font-medium text-slate-700 md:w-80">
           Operador
           <select
             value={selectedOperator}

@@ -1,4 +1,5 @@
 import { CalendarDays, RefreshCw } from 'lucide-react';
+import type { ReactNode } from 'react';
 import type { DatasetMeta } from '../../types/audit';
 import { formatDate } from '../../utils/formatters';
 
@@ -12,6 +13,7 @@ interface DashboardHeaderProps {
   analysisMode: 'monthly' | 'compare';
   onAnalysisModeChange: (mode: 'monthly' | 'compare') => void;
   isShiftViewDisabled?: boolean;
+  exportButton?: ReactNode;
 }
 
 export const DashboardHeader = ({
@@ -24,6 +26,7 @@ export const DashboardHeader = ({
   analysisMode,
   onAnalysisModeChange,
   isShiftViewDisabled = false,
+  exportButton,
 }: DashboardHeaderProps) => (
   <header className="flex flex-col justify-between gap-4 border-b border-slate-200 pb-6 md:flex-row md:items-end">
     <div>
@@ -93,6 +96,7 @@ export const DashboardHeader = ({
           </button>
         </div>
       </div>
+      {exportButton}
     </div>
   </header>
 );

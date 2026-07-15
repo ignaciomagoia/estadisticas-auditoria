@@ -13,7 +13,7 @@ export const CompareMonthsPlaceholder = ({ periods }: CompareMonthsPlaceholderPr
       <div className="mt-4 grid gap-4 md:grid-cols-2">
         <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
           Mes A
-          <select className="h-10 rounded-md border border-slate-200 bg-white px-3 text-sm font-normal text-slate-900">
+          <select className="pdf-hide h-10 rounded-md border border-slate-200 bg-white px-3 text-sm font-normal text-slate-900">
             {periods.map((period) => (
               <option key={period.id} value={period.id}>
                 {period.monthLabel}
@@ -23,7 +23,7 @@ export const CompareMonthsPlaceholder = ({ periods }: CompareMonthsPlaceholderPr
         </label>
         <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
           Mes B
-          <select className="h-10 rounded-md border border-slate-200 bg-white px-3 text-sm font-normal text-slate-900">
+          <select className="pdf-hide h-10 rounded-md border border-slate-200 bg-white px-3 text-sm font-normal text-slate-900">
             {periods.map((period) => (
               <option key={period.id} value={period.id}>
                 {period.monthLabel}

@@ -48,7 +48,7 @@ export const ShiftFilterBar = ({ records, filters, onChange, onReset }: ShiftFil
   };
 
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+    <section className="pdf-hide rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-[repeat(4,minmax(0,1fr))_auto]">
         <FilterSelect label="Turno" value={filters.shift} options={options.shift} onChange={(shift) => onChange({ ...filters, shift })} />
         <FilterSelect label="Auditor" value={filters.auditor} options={options.auditor} onChange={(auditor) => onChange({ ...filters, auditor })} />

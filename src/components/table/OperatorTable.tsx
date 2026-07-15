@@ -12,7 +12,7 @@ interface OperatorTableProps {
 
 type SortKey = keyof OperatorSummary;
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 20;
 
 const getSortValue = (row: OperatorSummary, key: SortKey) => row[key] ?? '';
 
@@ -71,7 +71,7 @@ export const OperatorTable = ({ rows, minimumAudits, onSelectOperator }: Operato
             Indicador visual configurable: {VALIDATION_THRESHOLDS.high}% o mas, {VALIDATION_THRESHOLDS.medium}% a {VALIDATION_THRESHOLDS.high - 0.1}%, y menos de {VALIDATION_THRESHOLDS.medium}%.
           </p>
         </div>
-        <label className="relative w-full md:w-80">
+        <label className="pdf-hide relative w-full md:w-80">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
           <input
             value={query}
@@ -85,6 +85,7 @@ export const OperatorTable = ({ rows, minimumAudits, onSelectOperator }: Operato
         </label>
       </div>
       <div className="overflow-x-auto">
+        <p className="pdf-only mb-2 px-4 text-xs text-slate-500">Se muestran las primeras 20 filas segun el orden actual.</p>
         <table className="min-w-full divide-y divide-slate-200 text-sm">
           <thead className="bg-slate-50">
             <tr>
@@ -122,7 +123,7 @@ export const OperatorTable = ({ rows, minimumAudits, onSelectOperator }: Operato
           </tbody>
         </table>
       </div>
-      <div className="flex items-center justify-between border-t border-slate-200 p-4 text-sm text-slate-600">
+      <div className="pdf-hide flex items-center justify-between border-t border-slate-200 p-4 text-sm text-slate-600">
         <span>
           Pagina {page} de {pageCount} - {formatNumber(filteredRows.length)} operadores
         </span>

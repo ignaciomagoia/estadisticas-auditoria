@@ -47,7 +47,7 @@ export const FilterBar = ({ records, filters, onChange, onReset }: FilterBarProp
   };
 
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+    <section className="pdf-hide rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-[repeat(5,minmax(0,1fr))_auto]">
         <FilterSelect label="Operador" value={filters.operator} options={options.operator} onChange={(operator) => onChange({ ...filters, operator })} />
         <FilterSelect label="Auditor" value={filters.auditor} options={options.auditor} onChange={(auditor) => onChange({ ...filters, auditor })} />

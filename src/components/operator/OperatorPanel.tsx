@@ -68,7 +68,7 @@ export const OperatorPanel = ({ operator, records, summary, onClose }: OperatorP
   const systemOptions = uniqueSorted(noveltyRecords.map((record) => record.affectedSystem));
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/30 backdrop-blur-sm" role="dialog" aria-modal="true">
+    <div className="pdf-hide fixed inset-0 z-50 bg-slate-950/30 backdrop-blur-sm" role="dialog" aria-modal="true">
       <aside className="ml-auto flex h-full w-full max-w-5xl flex-col overflow-y-auto bg-white shadow-2xl">
         <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-slate-200 bg-white p-5">
           <div>

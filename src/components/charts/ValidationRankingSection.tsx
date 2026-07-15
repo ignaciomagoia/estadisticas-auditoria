@@ -19,7 +19,7 @@ export const ValidationRankingSection = ({ rankingSummaries, minimumAudits, onMi
         <p className="mt-1 text-sm text-slate-500">Los porcentajes consideran Validado, Corregido y Observado dentro del resto de los filtros seleccionados.</p>
         {isActionFiltered ? <p className="mt-1 text-sm text-amber-700">El filtro de accion no se aplica a este ranking para evitar porcentajes no comparables.</p> : null}
       </div>
-      <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+      <label className="pdf-hide flex items-center gap-2 text-sm font-medium text-slate-700">
         Minimo
         <select
           value={minimumAudits}
