@@ -62,7 +62,7 @@ export const OperatorTable = ({ rows, minimumAudits, onSelectOperator }: Operato
   ];
 
   return (
-    <section className="rounded-lg border border-slate-200 bg-white shadow-sm">
+    <section className="pdf-section min-w-0 rounded-lg border border-slate-200 bg-white shadow-sm">
       <div className="flex flex-col gap-3 border-b border-slate-200 p-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h2 className="text-base font-semibold text-slate-950">Tabla principal por operador</h2>
@@ -84,7 +84,7 @@ export const OperatorTable = ({ rows, minimumAudits, onSelectOperator }: Operato
           />
         </label>
       </div>
-      <div className="overflow-x-auto">
+      <div className="max-w-full overflow-x-auto">
         <p className="pdf-only mb-2 px-4 text-xs text-slate-500">Se muestran las primeras 20 filas segun el orden actual.</p>
         <table className="min-w-full divide-y divide-slate-200 text-sm">
           <thead className="bg-slate-50">

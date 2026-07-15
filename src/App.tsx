@@ -171,7 +171,7 @@ const App = () => {
           </div>
         </section>
       ) : (
-        <div ref={pdfContentRef} className="grid gap-6">
+        <div ref={pdfContentRef} className="grid min-w-0 max-w-full gap-6">
           {analysisMode === 'compare' ? (
             <CompareMonthsPlaceholder periods={periods} />
           ) : viewMode === 'operators' ? (

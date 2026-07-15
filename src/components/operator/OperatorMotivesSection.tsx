@@ -17,7 +17,7 @@ export const OperatorMotivesSection = ({ records, summaries }: OperatorMotivesSe
   if (!summary) return null;
 
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+    <section className="pdf-section min-w-0 overflow-hidden rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
       <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
           <h2 className="text-base font-semibold text-slate-950">Motivos de correccion por operador</h2>
@@ -39,7 +39,7 @@ export const OperatorMotivesSection = ({ records, summaries }: OperatorMotivesSe
         </label>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[20rem_1fr]">
+      <div className="grid min-w-0 gap-4 lg:grid-cols-[20rem_minmax(0,1fr)]">
         <div>
           <h3 className="text-xl font-semibold text-slate-950">{summary.operator}</h3>
           <div className="mt-4 grid grid-cols-2 gap-3">
@@ -58,7 +58,7 @@ export const OperatorMotivesSection = ({ records, summaries }: OperatorMotivesSe
             ))}
           </div>
         </div>
-        <div className="h-80 min-h-0">
+        <div className="h-80 min-h-0 min-w-0">
           <ReasonBarChart data={summary.reasons} />
         </div>
       </div>

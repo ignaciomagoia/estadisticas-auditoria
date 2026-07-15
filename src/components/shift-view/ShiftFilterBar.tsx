@@ -27,7 +27,7 @@ const FilterSelect = ({
     <select
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      className="h-10 rounded-md border border-slate-200 bg-white px-3 text-sm font-normal text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+      className="h-10 w-full min-w-0 rounded-md border border-slate-200 bg-white px-3 text-sm font-normal text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
     >
       <option value="">Todos</option>
       {options.map((option) => (
@@ -48,8 +48,8 @@ export const ShiftFilterBar = ({ records, filters, onChange, onReset }: ShiftFil
   };
 
   return (
-    <section className="pdf-hide rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-[repeat(4,minmax(0,1fr))_auto]">
+    <section className="pdf-hide min-w-0 max-w-full rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
         <FilterSelect label="Turno" value={filters.shift} options={options.shift} onChange={(shift) => onChange({ ...filters, shift })} />
         <FilterSelect label="Auditor" value={filters.auditor} options={options.auditor} onChange={(auditor) => onChange({ ...filters, auditor })} />
         <FilterSelect
@@ -68,7 +68,7 @@ export const ShiftFilterBar = ({ records, filters, onChange, onReset }: ShiftFil
           type="button"
           onClick={onReset}
           title="Restablecer filtros de turnos"
-          className="mt-auto inline-flex h-10 items-center justify-center gap-2 rounded-md border border-slate-200 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+          className="mt-auto inline-flex h-10 min-w-0 items-center justify-center gap-2 rounded-md border border-slate-200 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
         >
           <RotateCcw size={16} />
           Limpiar

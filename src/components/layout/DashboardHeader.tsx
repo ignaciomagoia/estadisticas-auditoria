@@ -28,8 +28,8 @@ export const DashboardHeader = ({
   isShiftViewDisabled = false,
   exportButton,
 }: DashboardHeaderProps) => (
-  <header className="flex flex-col justify-between gap-4 border-b border-slate-200 pb-6 md:flex-row md:items-end">
-    <div>
+  <header className="flex min-w-0 flex-col justify-between gap-4 border-b border-slate-200 pb-6 lg:flex-row lg:items-end">
+    <div className="min-w-0">
       <p className="text-sm font-medium uppercase tracking-[0.18em] text-slate-500">Business Intelligence</p>
       <h1 className="mt-2 text-3xl font-semibold text-slate-950 sm:text-4xl">Dashboard Auditorias</h1>
       <div className="mt-3 flex flex-wrap gap-3 text-sm text-slate-600">
@@ -43,7 +43,7 @@ export const DashboardHeader = ({
         </span>
       </div>
     </div>
-    <div className="flex flex-col gap-3 md:items-end">
+    <div className="flex min-w-0 flex-col gap-3 lg:items-end">
       <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
         Periodo
         <select
@@ -58,8 +58,8 @@ export const DashboardHeader = ({
           ))}
         </select>
       </label>
-      <div className="flex flex-wrap gap-2">
-        <div className="inline-flex rounded-md border border-slate-200 bg-white p-1 shadow-sm">
+      <div className="flex min-w-0 flex-wrap gap-2">
+        <div className="inline-flex min-w-0 rounded-md border border-slate-200 bg-white p-1 shadow-sm">
           <button
             type="button"
             onClick={() => onAnalysisModeChange('monthly')}
@@ -77,7 +77,7 @@ export const DashboardHeader = ({
             Comparar meses
           </button>
         </div>
-        <div className="inline-flex rounded-md border border-slate-200 bg-white p-1 shadow-sm">
+        <div className="inline-flex min-w-0 rounded-md border border-slate-200 bg-white p-1 shadow-sm">
           <button
             type="button"
             onClick={() => onViewModeChange('operators')}

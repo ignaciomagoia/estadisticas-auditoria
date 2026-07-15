@@ -28,7 +28,7 @@ const KPI_CONFIG = [
 ] as const;
 
 export const KpiGrid = ({ summary }: KpiGridProps) => (
-  <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+  <section className="pdf-section grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
     {KPI_CONFIG.map((item) => {
       const { key, label, icon: Icon } = item;
       const tooltip = 'tooltip' in item ? item.tooltip : undefined;
@@ -36,7 +36,7 @@ export const KpiGrid = ({ summary }: KpiGridProps) => (
       const value = key === 'noveltyRate' || key === 'validatedRate' ? formatPercent(Number(rawValue)) : formatNumber(Number(rawValue));
 
       return (
-        <article key={key} title={tooltip} className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+        <article key={key} title={tooltip} className="min-w-0 rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-sm font-medium text-slate-500">{label}</p>

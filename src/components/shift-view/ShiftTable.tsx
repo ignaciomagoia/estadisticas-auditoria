@@ -44,12 +44,12 @@ export const ShiftTable = ({ rows, onSelectShift }: ShiftTableProps) => {
   ];
 
   return (
-    <section className="rounded-lg border border-slate-200 bg-white shadow-sm">
+    <section className="pdf-section min-w-0 rounded-lg border border-slate-200 bg-white shadow-sm">
       <div className="border-b border-slate-200 p-4">
         <h2 className="text-base font-semibold text-slate-950">Tabla resumen por turno</h2>
         <p className="text-sm text-slate-500">Click en un turno para ver operadores auditados asociados.</p>
       </div>
-      <div className="overflow-x-auto">
+      <div className="max-w-full overflow-x-auto">
         <p className="pdf-only mb-2 px-4 text-xs text-slate-500">Se muestran las primeras 20 filas segun el orden actual.</p>
         <table className="min-w-full divide-y divide-slate-200 text-sm">
           <thead className="bg-slate-50">

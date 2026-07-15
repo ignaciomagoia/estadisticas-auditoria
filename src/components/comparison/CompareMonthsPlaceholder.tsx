@@ -5,7 +5,7 @@ interface CompareMonthsPlaceholderProps {
 }
 
 export const CompareMonthsPlaceholder = ({ periods }: CompareMonthsPlaceholderProps) => (
-  <section className="rounded-lg border border-slate-200 bg-white p-5 text-slate-700 shadow-sm">
+  <section className="pdf-section rounded-lg border border-slate-200 bg-white p-5 text-slate-700 shadow-sm">
     <h2 className="text-base font-semibold text-slate-950">Comparar meses</h2>
     {periods.length < 2 ? (
       <p className="mt-2 text-sm">Agrega al menos un segundo archivo para habilitar la comparacion.</p>

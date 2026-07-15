@@ -32,6 +32,27 @@ const sanitizeCloneColors = (clonedRoot: HTMLElement) => {
   });
 };
 
+const replaceCanvasWithImages = (sourceElement: HTMLElement, clonedElement: HTMLElement) => {
+  const sourceCanvases = Array.from(sourceElement.querySelectorAll('canvas'));
+  const clonedCanvases = Array.from(clonedElement.querySelectorAll('canvas'));
+
+  clonedCanvases.forEach((clonedCanvas, index) => {
+    const sourceCanvas = sourceCanvases[index];
+    if (!sourceCanvas) return;
+
+    const image = clonedElement.ownerDocument.createElement('img');
+    image.src = sourceCanvas.toDataURL('image/png');
+    image.width = sourceCanvas.clientWidth || sourceCanvas.width;
+    image.height = sourceCanvas.clientHeight || sourceCanvas.height;
+    image.style.display = 'block';
+    image.style.width = `${sourceCanvas.clientWidth || sourceCanvas.width}px`;
+    image.style.height = `${sourceCanvas.clientHeight || sourceCanvas.height}px`;
+    image.style.maxWidth = '100%';
+    image.style.objectFit = 'contain';
+    clonedCanvas.replaceWith(image);
+  });
+};
+
 const addPageHeader = (pdf: jsPDF, options: ExportDashboardPdfOptions, pageWidth: number, margin: number) => {
   const generatedAt = new Intl.DateTimeFormat('es-AR', {
     dateStyle: 'short',
@@ -107,7 +128,9 @@ export const exportDashboardToPdf = async (options: ExportDashboardPdfOptions) =
 
     addPageHeader(pdf, options, pageWidth, margin);
 
-    const sections = Array.from(options.rootElement.children).filter((element): element is HTMLElement => {
+    const explicitSections = Array.from(options.rootElement.querySelectorAll<HTMLElement>('.pdf-section'));
+    const candidateSections = explicitSections.length ? explicitSections : Array.from(options.rootElement.children);
+    const sections = candidateSections.filter((element): element is HTMLElement => {
       const htmlElement = element as HTMLElement;
       return !htmlElement.classList.contains('pdf-hide') && htmlElement.offsetParent !== null;
     });
@@ -119,7 +142,9 @@ export const exportDashboardToPdf = async (options: ExportDashboardPdfOptions) =
         useCORS: true,
         logging: false,
         onclone: (_document, clonedElement) => {
-          sanitizeCloneColors(clonedElement as HTMLElement);
+          const clonedSection = clonedElement as HTMLElement;
+          replaceCanvasWithImages(section, clonedSection);
+          sanitizeCloneColors(clonedSection);
         },
       });
       yPosition = addCanvasToPdf(pdf, canvas, pageWidth, pageHeight, margin, yPosition);

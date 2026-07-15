@@ -10,7 +10,7 @@ interface PriorityChartsSectionProps {
 }
 
 export const PriorityChartsSection = ({ records, summaries }: PriorityChartsSectionProps) => (
-  <section className="grid gap-4 xl:grid-cols-2">
+  <section className="pdf-section grid min-w-0 gap-4 xl:grid-cols-2">
     <ChartCard title="Operadores con mas correcciones y observaciones" subtitle="Este grafico muestra volumen absoluto y no porcentaje.">
       <NoveltyVolumeChart data={getOperatorsByNoveltyVolume(summaries, 15)} />
     </ChartCard>

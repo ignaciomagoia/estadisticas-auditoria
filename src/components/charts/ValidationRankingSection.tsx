@@ -12,7 +12,7 @@ interface ValidationRankingSectionProps {
 const MINIMUM_OPTIONS = [5, 10, 20, 30];
 
 export const ValidationRankingSection = ({ rankingSummaries, minimumAudits, onMinimumAuditsChange, isActionFiltered }: ValidationRankingSectionProps) => (
-  <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+  <section className="pdf-section min-w-0 overflow-hidden rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
     <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
       <div>
         <h2 className="text-base font-semibold text-slate-950">Operadores con menor porcentaje de validacion</h2>
@@ -34,7 +34,7 @@ export const ValidationRankingSection = ({ rankingSummaries, minimumAudits, onMi
         </select>
       </label>
     </div>
-    <div className="h-[28rem]">
+    <div className="h-[28rem] min-w-0">
       <ValidationStackedChart data={getLowestValidationOperators(rankingSummaries, minimumAudits, 15)} />
     </div>
   </section>

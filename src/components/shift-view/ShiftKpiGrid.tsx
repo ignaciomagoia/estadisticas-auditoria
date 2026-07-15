@@ -20,7 +20,7 @@ const KPI_CONFIG = [
 ] as const;
 
 export const ShiftKpiGrid = ({ summary }: ShiftKpiGridProps) => (
-  <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+  <section className="pdf-section grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
     {KPI_CONFIG.map(({ key, label, icon: Icon }) => {
       const value = key === 'validatedRate' || key === 'noveltyRate' ? formatPercent(Number(summary[key])) : formatNumber(Number(summary[key]));
       return (

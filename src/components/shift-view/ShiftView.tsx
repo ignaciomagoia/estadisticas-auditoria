@@ -67,7 +67,7 @@ export const ShiftView = ({ records, matchReport, globalFilters, filters, onFilt
       ) : (
         <>
           <ShiftKpiGrid summary={kpis} />
-          <section className="grid gap-4 xl:grid-cols-2">
+          <section className="pdf-section grid min-w-0 gap-4 xl:grid-cols-2">
             <ChartCard title="Porcentaje de validacion por turno">
               <ShiftValidationChart data={summaries} />
             </ChartCard>
@@ -76,7 +76,7 @@ export const ShiftView = ({ records, matchReport, globalFilters, filters, onFilt
             </ChartCard>
           </section>
 
-          <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+          <section className="pdf-section min-w-0 overflow-hidden rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
             <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div>
                 <h2 className="text-base font-semibold text-slate-950">Motivos de correccion por turno</h2>
@@ -94,12 +94,12 @@ export const ShiftView = ({ records, matchReport, globalFilters, filters, onFilt
                 ))}
               </select>
             </div>
-            <div className="h-80">
+            <div className="h-80 min-w-0">
               <ShiftReasonsChart data={shiftReasons} />
             </div>
           </section>
 
-          <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+          <section className="pdf-section min-w-0 overflow-hidden rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
             <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div>
                 <h2 className="text-base font-semibold text-slate-950">Comparacion de turnos por motivo</h2>
@@ -117,7 +117,7 @@ export const ShiftView = ({ records, matchReport, globalFilters, filters, onFilt
                 ))}
               </select>
             </div>
-            <div className="h-80">
+            <div className="h-80 min-w-0">
               <ShiftsForReasonChart data={shiftsForReason} />
             </div>
           </section>
