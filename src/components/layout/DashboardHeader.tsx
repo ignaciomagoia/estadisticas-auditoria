@@ -1,7 +1,6 @@
-import { CalendarDays, RefreshCw } from 'lucide-react';
+import { CalendarDays } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { DatasetMeta } from '../../types/audit';
-import { formatDate } from '../../utils/formatters';
 
 interface DashboardHeaderProps {
   meta: DatasetMeta | null;
@@ -36,10 +35,6 @@ export const DashboardHeader = ({
         <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 ring-1 ring-slate-200">
           <CalendarDays size={16} />
           {meta?.monthLabel ?? 'Periodo no seleccionado'}
-        </span>
-        <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 ring-1 ring-slate-200">
-          <RefreshCw size={16} />
-          Ultima actualizacion: {formatDate(meta?.lastUpdated ?? null)}
         </span>
       </div>
     </div>
