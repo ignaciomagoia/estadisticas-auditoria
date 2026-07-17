@@ -12,7 +12,7 @@ import {
 } from '../domain/shift-metrics';
 import type { AuditRecord, KpiSummary, OperatorSummary } from '../types/audit';
 import type { ShiftAuditRecord, ShiftCode, ShiftSummary } from '../domain/shift-types';
-import type { AuditReportKpis, AuditReportPayload } from './audit-report-types';
+import type { AuditReportKpis, AuditReportPayload, AuditReportScope } from './audit-report-types';
 import { formatNumber, formatPercent } from '../utils/formatters';
 
 const REPORT_OPERATOR_ROWS = 20;
@@ -52,6 +52,7 @@ export const buildOperatorAuditReportPayload = ({
   summaries,
   rankingSummaries,
   minimumAudits,
+  reportScope,
 }: {
   periodLabel: string;
   filtersSummary: string[];
@@ -60,6 +61,7 @@ export const buildOperatorAuditReportPayload = ({
   summaries: OperatorSummary[];
   rankingSummaries: OperatorSummary[];
   minimumAudits: number;
+  reportScope: AuditReportScope;
 }): AuditReportPayload => {
   const topReasons = getGeneralReasonStats(records, 10);
   const selectedReason = topReasons[0]?.label ?? null;
@@ -69,6 +71,7 @@ export const buildOperatorAuditReportPayload = ({
     periodLabel,
     viewMode: 'operators',
     viewLabel: 'Operadores',
+    reportScope,
     filtersSummary,
     kpis: reportKpis,
     summaryLines: getObjectiveSummaryLines(reportKpis, selectedReason),
@@ -91,12 +94,14 @@ export const buildShiftAuditReportPayload = ({
   kpis,
   records,
   summaries,
+  reportScope,
 }: {
   periodLabel: string;
   filtersSummary: string[];
   kpis: KpiSummary & { shiftsWithAudits: number };
   records: ShiftAuditRecord[];
   summaries: ShiftSummary[];
+  reportScope: AuditReportScope;
 }): AuditReportPayload => {
   const selectedShift = summaries[0]?.shift ?? null;
   const topReason = getReasonCounts(records)[0]?.label ?? null;
@@ -106,6 +111,7 @@ export const buildShiftAuditReportPayload = ({
     periodLabel,
     viewMode: 'shifts',
     viewLabel: 'Turnos',
+    reportScope,
     filtersSummary,
     kpis: reportKpis,
     summaryLines: getObjectiveSummaryLines(reportKpis, topReason),

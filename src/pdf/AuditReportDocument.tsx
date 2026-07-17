@@ -5,6 +5,7 @@ import { AuditReportHeader } from './AuditReportHeader';
 import { AuditReportOperatorPages } from './AuditReportOperatorPages';
 import { AuditReportShiftPages } from './AuditReportShiftPages';
 import { AuditReportSummary } from './AuditReportSummary';
+import { AuditReportExecutivePages } from './AuditReportExecutivePages';
 import { styles } from './audit-report-styles';
 
 interface AuditReportDocumentProps {
@@ -19,6 +20,12 @@ export const AuditReportDocument = ({ report }: AuditReportDocumentProps) => (
       <AuditReportFooter generatedAt={report.generatedAt} />
     </Page>
 
-    {report.viewMode === 'operators' ? <AuditReportOperatorPages report={report} /> : <AuditReportShiftPages report={report} />}
+    {report.reportScope === 'executive' ? (
+      <AuditReportExecutivePages report={report} />
+    ) : report.viewMode === 'operators' ? (
+      <AuditReportOperatorPages report={report} />
+    ) : (
+      <AuditReportShiftPages report={report} />
+    )}
   </Document>
 );

@@ -4,9 +4,10 @@ import { formatPercent } from '../../utils/formatters';
 
 interface ValidationStackedChartProps {
   data: OperatorSummary[];
+  onItemClick?: (item: OperatorSummary) => void;
 }
 
-export const ValidationStackedChart = ({ data }: ValidationStackedChartProps) => (
+export const ValidationStackedChart = ({ data, onItemClick }: ValidationStackedChartProps) => (
   <Bar
     data={{
       labels: data.map((item) => item.operator),
@@ -29,6 +30,12 @@ export const ValidationStackedChart = ({ data }: ValidationStackedChartProps) =>
       responsive: true,
       maintainAspectRatio: false,
       indexAxis: 'y',
+      onClick: (_event, elements) => {
+        const index = elements[0]?.index;
+        if (index === undefined) return;
+        const item = data[index];
+        if (item) onItemClick?.(item);
+      },
       plugins: {
         legend: { position: 'bottom', labels: { color: '#475569' } },
         tooltip: {

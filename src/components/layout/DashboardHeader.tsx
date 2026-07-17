@@ -12,6 +12,7 @@ interface DashboardHeaderProps {
   analysisMode: 'monthly' | 'compare';
   onAnalysisModeChange: (mode: 'monthly' | 'compare') => void;
   isShiftViewDisabled?: boolean;
+  modeSelector?: ReactNode;
   exportButton?: ReactNode;
 }
 
@@ -25,6 +26,7 @@ export const DashboardHeader = ({
   analysisMode,
   onAnalysisModeChange,
   isShiftViewDisabled = false,
+  modeSelector,
   exportButton,
 }: DashboardHeaderProps) => (
   <header className="flex min-w-0 flex-col justify-between gap-4 border-b border-slate-200 pb-6 lg:flex-row lg:items-end">
@@ -36,6 +38,7 @@ export const DashboardHeader = ({
           {meta?.monthLabel ?? 'Periodo no seleccionado'}
         </span>
       </div>
+      {modeSelector ? <div className="mt-4">{modeSelector}</div> : null}
     </div>
     <div className="flex min-w-0 flex-col gap-3 lg:items-end">
       <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">

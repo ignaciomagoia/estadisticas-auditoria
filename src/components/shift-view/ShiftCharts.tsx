@@ -3,7 +3,7 @@ import type { ShiftReasonComparisonItem, ShiftReasonItem, ShiftSummary } from '.
 import { formatPercent } from '../../utils/formatters';
 import { palette } from '../charts/chartOptions';
 
-export const ShiftValidationChart = ({ data }: { data: ShiftSummary[] }) => (
+export const ShiftValidationChart = ({ data, onShiftClick }: { data: ShiftSummary[]; onShiftClick?: (item: ShiftSummary) => void }) => (
   <Bar
     data={{
       labels: data.map((item) => `Turno ${item.shift}`),
@@ -16,6 +16,12 @@ export const ShiftValidationChart = ({ data }: { data: ShiftSummary[] }) => (
       responsive: true,
       maintainAspectRatio: false,
       indexAxis: 'y',
+      onClick: (_event, elements) => {
+        const index = elements[0]?.index;
+        if (index === undefined) return;
+        const item = data[index];
+        if (item) onShiftClick?.(item);
+      },
       plugins: {
         legend: { position: 'bottom' },
         tooltip: {

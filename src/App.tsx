@@ -1,19 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, Loader2 } from 'lucide-react';
-import { CompareMonthsPlaceholder } from './components/comparison/CompareMonthsPlaceholder';
 import { DownloadAuditReportButton } from './components/export/DownloadAuditReportButton';
-import { ComplementaryChartsSection } from './components/charts/ComplementaryChartsSection';
-import { PriorityChartsSection } from './components/charts/PriorityChartsSection';
-import { ValidationRankingSection } from './components/charts/ValidationRankingSection';
-import { FilterBar } from './components/filters/FilterBar';
-import { KpiGrid } from './components/kpis/KpiGrid';
 import { DashboardHeader } from './components/layout/DashboardHeader';
 import { PageShell } from './components/layout/PageShell';
-import { OperatorPanel } from './components/operator/OperatorPanel';
-import { OperatorMotivesSection } from './components/operator/OperatorMotivesSection';
-import { ReasonInsightsSection } from './components/operator/ReasonInsightsSection';
-import { OperatorTable } from './components/table/OperatorTable';
-import { ShiftView } from './components/shift-view/ShiftView';
+import { DashboardModeSelector, type DashboardDisplayMode } from './components/views/DashboardModeSelector';
+import { DetailedAnalysisView } from './components/views/DetailedAnalysisView';
+import { ExecutiveSummaryView } from './components/views/ExecutiveSummaryView';
 import { attachShiftsToAuditRecords, matchOperatorsToShifts } from './data/operator-shift-matcher';
 import { applyCompatibleOperatorFiltersForShifts, applyShiftFilters, EMPTY_SHIFT_FILTERS, getShiftKpis, getShiftSummaries, type ShiftFilterState } from './domain/shift-metrics';
 import { useAuditDataset } from './hooks/useAuditDataset';
@@ -26,6 +18,15 @@ import { buildOperatorAuditReportPayload, buildShiftAuditReportPayload } from '.
 
 type ViewMode = 'operators' | 'shifts';
 type AnalysisMode = 'monthly' | 'compare';
+
+const isDashboardDisplayMode = (value: string | null): value is DashboardDisplayMode => value === 'executive' || value === 'detailed';
+
+const getInitialDashboardMode = (): DashboardDisplayMode => {
+  if (typeof window === 'undefined') return 'detailed';
+  const urlMode = new URLSearchParams(window.location.search).get('mode');
+  if (isDashboardDisplayMode(urlMode)) return urlMode;
+  return 'detailed';
+};
 
 const EMPTY_SHIFT_REPORT: OperatorShiftMatchReport = {
   matches: [],
@@ -60,6 +61,7 @@ const App = () => {
   const [minimumAudits, setMinimumAudits] = useState(10);
   const [viewMode, setViewMode] = useState<ViewMode>('operators');
   const [analysisMode, setAnalysisMode] = useState<AnalysisMode>('monthly');
+  const [dashboardMode, setDashboardMode] = useState<DashboardDisplayMode>(getInitialDashboardMode);
   const [shiftFilters, setShiftFilters] = useState<ShiftFilterState>(EMPTY_SHIFT_FILTERS);
 
   const allRecords = dataset?.records ?? [];
@@ -73,7 +75,16 @@ const App = () => {
   const shiftMatchReport = useMemo(() => (roster ? matchOperatorsToShifts(allRecords, roster.members) : EMPTY_SHIFT_REPORT), [allRecords, roster]);
   const shiftRecords = useMemo(() => attachShiftsToAuditRecords(allRecords, shiftMatchReport), [allRecords, shiftMatchReport]);
   const compatibleShiftRecordsForReport = useMemo(() => applyCompatibleOperatorFiltersForShifts(shiftRecords, filters), [filters, shiftRecords]);
-  const filteredShiftRecordsForReport = useMemo(() => applyShiftFilters(compatibleShiftRecordsForReport, shiftFilters), [compatibleShiftRecordsForReport, shiftFilters]);
+  const effectiveShiftFilters = useMemo<ShiftFilterState>(
+    () => ({
+      shift: shiftFilters.shift,
+      auditor: shiftFilters.auditor || filters.auditor,
+      affectedSystem: shiftFilters.affectedSystem || filters.affectedSystem,
+      correctionReason: shiftFilters.correctionReason || filters.correctionReason,
+    }),
+    [filters.auditor, filters.affectedSystem, filters.correctionReason, shiftFilters],
+  );
+  const filteredShiftRecordsForReport = useMemo(() => applyShiftFilters(shiftRecords, effectiveShiftFilters), [effectiveShiftFilters, shiftRecords]);
   const shiftKpisForReport = useMemo(() => getShiftKpis(filteredShiftRecordsForReport), [filteredShiftRecordsForReport]);
   const shiftSummariesForReport = useMemo(() => getShiftSummaries(filteredShiftRecordsForReport), [filteredShiftRecordsForReport]);
   const isShiftViewDisabled = isRosterLoading || Boolean(rosterError) || !roster;
@@ -91,12 +102,12 @@ const App = () => {
       ]);
     }
     return formatFilterSummary([
-      ['Turno', shiftFilters.shift ? `Turno ${shiftFilters.shift}` : ''],
-      ['Auditor', shiftFilters.auditor || filters.auditor],
-      ['Sistema', shiftFilters.affectedSystem || filters.affectedSystem],
-      ['Motivo', shiftFilters.correctionReason || filters.correctionReason],
+      ['Turno', effectiveShiftFilters.shift ? `Turno ${effectiveShiftFilters.shift}` : ''],
+      ['Auditor', effectiveShiftFilters.auditor],
+      ['Sistema', effectiveShiftFilters.affectedSystem],
+      ['Motivo', effectiveShiftFilters.correctionReason],
     ]);
-  }, [analysisMode, filters, shiftFilters, viewMode]);
+  }, [analysisMode, effectiveShiftFilters, filters, viewMode]);
   const auditReportPayload = useMemo(() => {
     if (analysisMode === 'compare') return null;
     if (viewMode === 'operators') {
@@ -108,6 +119,7 @@ const App = () => {
         summaries: operatorSummaries,
         rankingSummaries: rankingOperatorSummaries,
         minimumAudits,
+        reportScope: dashboardMode,
       });
     }
 
@@ -118,9 +130,11 @@ const App = () => {
       kpis: shiftKpisForReport,
       records: filteredShiftRecordsForReport,
       summaries: shiftSummariesForReport,
+      reportScope: dashboardMode,
     });
   }, [
     analysisMode,
+    dashboardMode,
     filteredRecords,
     filteredShiftRecordsForReport,
     filtersSummary,
@@ -134,6 +148,58 @@ const App = () => {
     viewMode,
   ]);
   const pdfFileName = `informe-auditorias-${slugify(periodLabel)}-${viewMode === 'operators' ? 'operadores' : 'turnos'}.pdf`;
+
+  const handleExecutiveShiftFiltersChange = (nextFilters: ShiftFilterState) => {
+    setShiftFilters(nextFilters);
+    setFilters((current) => ({
+      ...current,
+      auditor: '',
+      affectedSystem: '',
+      correctionReason: '',
+    }));
+  };
+
+  const handleExecutiveShiftFiltersReset = () => {
+    setShiftFilters(EMPTY_SHIFT_FILTERS);
+    setFilters((current) => ({
+      ...current,
+      auditor: '',
+      affectedSystem: '',
+      correctionReason: '',
+    }));
+  };
+
+  const showDetailedAnalysis = () => {
+    setDashboardMode('detailed');
+  };
+
+  const selectOperatorFromExecutive = (operator: string) => {
+    setAnalysisMode('monthly');
+    setViewMode('operators');
+    setFilters((current) => ({ ...current, operator, action: '' }));
+    setSelectedOperator(operator);
+    setDashboardMode('detailed');
+  };
+
+  const selectShiftFromExecutive = (shift: string) => {
+    setAnalysisMode('monthly');
+    setViewMode('shifts');
+    setShiftFilters((current) => ({ ...current, shift }));
+    setDashboardMode('detailed');
+  };
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem('audit-dashboard-mode', dashboardMode);
+    const url = new URL(window.location.href);
+    url.searchParams.set('mode', dashboardMode);
+    window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+  }, [dashboardMode]);
+
+  useEffect(() => {
+    if (dashboardMode !== 'executive') return;
+    setFilters((current) => (current.action ? { ...current, action: '' } : current));
+  }, [dashboardMode]);
 
   useEffect(() => {
     if (isShiftViewDisabled && viewMode === 'shifts') setViewMode('operators');
@@ -180,6 +246,7 @@ const App = () => {
         analysisMode={analysisMode}
         onAnalysisModeChange={setAnalysisMode}
         isShiftViewDisabled={isShiftViewDisabled}
+        modeSelector={<DashboardModeSelector mode={dashboardMode} onChange={setDashboardMode} />}
         exportButton={
           <DownloadAuditReportButton
             report={auditReportPayload}
@@ -209,33 +276,55 @@ const App = () => {
         </section>
       ) : (
         <div className="grid min-w-0 max-w-full gap-6">
-          {analysisMode === 'compare' ? (
-            <CompareMonthsPlaceholder periods={periods} />
-          ) : viewMode === 'operators' ? (
-            <>
-              <FilterBar records={allRecords} filters={filters} onChange={setFilters} onReset={() => setFilters(EMPTY_FILTERS)} />
-              <KpiGrid summary={kpis} />
-              <ValidationRankingSection
-                rankingSummaries={rankingOperatorSummaries}
-                minimumAudits={minimumAudits}
-                onMinimumAuditsChange={setMinimumAudits}
-                isActionFiltered={isActionFiltered}
-              />
-              <OperatorMotivesSection records={filteredRecords} summaries={operatorSummaries} />
-              <ReasonInsightsSection records={filteredRecords} summaries={operatorSummaries} />
-              <PriorityChartsSection records={filteredRecords} summaries={operatorSummaries} />
-              <OperatorTable rows={operatorSummaries} minimumAudits={minimumAudits} onSelectOperator={setSelectedOperator} />
-              <OperatorPanel operator={selectedOperator} records={filteredRecords} summary={selectedSummary} onClose={() => setSelectedOperator(null)} />
-              <ComplementaryChartsSection records={filteredRecords} rankingRecords={rankingRecords} />
-            </>
+          {dashboardMode === 'executive' && analysisMode === 'monthly' ? (
+            <ExecutiveSummaryView
+              periodLabel={periodLabel}
+              viewMode={viewMode}
+              allRecords={allRecords}
+              filters={filters}
+              onFiltersChange={setFilters}
+              onFiltersReset={() => setFilters(EMPTY_FILTERS)}
+              filteredRecords={filteredRecords}
+              kpis={kpis}
+              operatorSummaries={operatorSummaries}
+              rankingOperatorSummaries={rankingOperatorSummaries}
+              minimumAudits={minimumAudits}
+              shiftFilterRecords={compatibleShiftRecordsForReport}
+              filteredShiftRecords={filteredShiftRecordsForReport}
+              shiftFilters={effectiveShiftFilters}
+              onShiftFiltersChange={handleExecutiveShiftFiltersChange}
+              onShiftFiltersReset={handleExecutiveShiftFiltersReset}
+              shiftKpis={shiftKpisForReport}
+              shiftSummaries={shiftSummariesForReport}
+              onViewDetailed={showDetailedAnalysis}
+              onSelectOperator={selectOperatorFromExecutive}
+              onSelectShift={selectShiftFromExecutive}
+            />
           ) : (
-            <ShiftView
-              records={shiftRecords}
-              matchReport={shiftMatchReport}
-              globalFilters={filters}
-              filters={shiftFilters}
-              onFiltersChange={setShiftFilters}
-              onFiltersReset={() => setShiftFilters(EMPTY_SHIFT_FILTERS)}
+            <DetailedAnalysisView
+              analysisMode={analysisMode}
+              viewMode={viewMode}
+              periods={periods}
+              allRecords={allRecords}
+              filteredRecords={filteredRecords}
+              rankingRecords={rankingRecords}
+              filters={filters}
+              onFiltersChange={setFilters}
+              onFiltersReset={() => setFilters(EMPTY_FILTERS)}
+              kpis={kpis}
+              operatorSummaries={operatorSummaries}
+              rankingOperatorSummaries={rankingOperatorSummaries}
+              minimumAudits={minimumAudits}
+              onMinimumAuditsChange={setMinimumAudits}
+              isActionFiltered={isActionFiltered}
+              selectedOperator={selectedOperator}
+              selectedSummary={selectedSummary}
+              onSelectOperator={setSelectedOperator}
+              shiftRecords={shiftRecords}
+              shiftMatchReport={shiftMatchReport}
+              shiftFilters={shiftFilters}
+              onShiftFiltersChange={setShiftFilters}
+              onShiftFiltersReset={() => setShiftFilters(EMPTY_SHIFT_FILTERS)}
             />
           )}
         </div>

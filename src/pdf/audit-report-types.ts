@@ -7,11 +7,13 @@ import type {
 import type { ShiftReasonComparisonItem, ShiftReasonItem, ShiftSummary } from '../domain/shift-types';
 
 export type AuditReportViewMode = 'operators' | 'shifts';
+export type AuditReportScope = 'executive' | 'detailed';
 
 export interface AuditReportBase {
   periodLabel: string;
   viewMode: AuditReportViewMode;
   viewLabel: string;
+  reportScope: AuditReportScope;
   filtersSummary: string[];
   generatedAt: Date;
 }
