@@ -55,7 +55,7 @@ const formatFilterSummary = (entries: Array<[string, string]>) => entries.filter
 
 const App = () => {
   const { dataset, periods, selectedPeriod, selectedPeriodId, setSelectedPeriodId, isLoading, error } = useAuditDataset();
-  const { roster, isLoading: isRosterLoading, error: rosterError } = useShiftRoster();
+  const { roster, isLoading: isRosterLoading, error: rosterError } = useShiftRoster(selectedPeriod);
   const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS);
   const [selectedOperator, setSelectedOperator] = useState<string | null>(null);
   const [minimumAudits, setMinimumAudits] = useState(10);
@@ -212,6 +212,10 @@ const App = () => {
   useEffect(() => {
     if (!import.meta.env.DEV) return;
     if (!roster || allRecords.length === 0) return;
+    const associatedOperatorsByShift = shiftMatchReport.matches.reduce<Record<string, number>>((acc, match) => {
+      acc[match.shift] = (acc[match.shift] ?? 0) + 1;
+      return acc;
+    }, {});
     console.table([
       {
         operadoresAuditados: shiftMatchReport.totalAuditOperators,
@@ -226,6 +230,14 @@ const App = () => {
         auditoriasExcluidas: shiftMatchReport.excludedAuditCount,
       },
     ]);
+    console.table(
+      Object.entries(associatedOperatorsByShift)
+        .sort(([left], [right]) => left.localeCompare(right))
+        .map(([turno, operadoresAsociados]) => ({
+          turno,
+          operadoresAsociados,
+        })),
+    );
     console.table(
       shiftMatchReport.excludedAuditRanking.slice(0, 20).map((item) => ({
         operadorSinAsociacion: item.operatorName,

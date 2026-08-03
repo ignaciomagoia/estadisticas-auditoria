@@ -1,5 +1,6 @@
 import { parseAuditWorkbook } from '../data/auditParser';
 import type { AuditDataset, DatasetMeta } from '../types/audit';
+import { canonicalizeAuditDatasetOperators } from './operatorNameService';
 
 const datasetCache = new Map<string, AuditDataset>();
 
@@ -14,7 +15,7 @@ export const loadAuditDataset = async (meta: DatasetMeta): Promise<AuditDataset>
   }
 
   const buffer = await response.arrayBuffer();
-  const dataset = parseAuditWorkbook(buffer, meta);
+  const dataset = canonicalizeAuditDatasetOperators(parseAuditWorkbook(buffer, meta));
   datasetCache.set(cacheKey, dataset);
   return dataset;
 };

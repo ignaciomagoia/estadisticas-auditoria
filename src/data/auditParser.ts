@@ -19,6 +19,19 @@ const REQUIRED_HEADERS = {
 
 type HeaderKey = keyof typeof REQUIRED_HEADERS;
 
+const HEADER_MATCHES: Record<HeaderKey, string[]> = {
+  date: ['fecha'],
+  auditor: ['auditor'],
+  eventId: ['id del evento'],
+  sourceMedium: ['medio de origen'],
+  operator: ['operador auditado'],
+  delaySae: ['demora en crear hecho en sae'],
+  action: ['accion tomada'],
+  affectedSystem: ['sistema afectado'],
+  correctionReason: ['motivo de correccion'],
+  additionalNotes: ['observaciones adicionales'],
+};
+
 const normalizeKey = (value: unknown) =>
   String(value ?? '')
     .normalize('NFD')
@@ -26,6 +39,23 @@ const normalizeKey = (value: unknown) =>
     .trim()
     .toLowerCase()
     .replace(/\s+/g, ' ');
+
+const getVisibleSheetNames = (workbook: XLSX.WorkBook) =>
+  workbook.SheetNames.filter((_, index) => {
+    const hiddenState = workbook.Workbook?.Sheets?.[index]?.Hidden ?? 0;
+    return hiddenState === 0;
+  });
+
+const selectAuditSheetName = (workbook: XLSX.WorkBook, meta: DatasetMeta) => {
+  const visibleSheetNames = getVisibleSheetNames(workbook);
+  const candidateSheetNames = visibleSheetNames.length ? visibleSheetNames : workbook.SheetNames;
+  const expectedSheetName = normalizeKey(meta.monthLabel);
+  const matchingSheetName =
+    candidateSheetNames.find((sheetName) => normalizeKey(sheetName) === expectedSheetName) ??
+    candidateSheetNames.find((sheetName) => normalizeKey(sheetName).includes(expectedSheetName));
+
+  return matchingSheetName ?? candidateSheetNames[0];
+};
 
 const normalizeText = (value: unknown): string | null => {
   if (value === null || value === undefined) return null;
@@ -83,9 +113,9 @@ const mapHeaders = (rows: unknown[][]) => {
   headerRow.forEach((header, index) => headerMap.set(normalizeKey(header), index));
 
   return Object.entries(REQUIRED_HEADERS).reduce<Record<HeaderKey, number>>((acc, [key, label]) => {
-    const expectedHeader = normalizeKey(label);
-    const exactColumnIndex = headerMap.get(expectedHeader);
-    const compatibleColumn = Array.from(headerMap.entries()).find(([actualHeader]) => actualHeader.startsWith(expectedHeader));
+    const expectedHeaders = HEADER_MATCHES[key as HeaderKey] ?? [normalizeKey(label)];
+    const exactColumnIndex = expectedHeaders.map((expectedHeader) => headerMap.get(expectedHeader)).find((index) => index !== undefined);
+    const compatibleColumn = Array.from(headerMap.entries()).find(([actualHeader]) => expectedHeaders.some((expectedHeader) => actualHeader.startsWith(expectedHeader)));
     const columnIndex = exactColumnIndex ?? compatibleColumn?.[1];
     acc[key as HeaderKey] = columnIndex ?? -1;
     return acc;
@@ -118,7 +148,8 @@ const toRecord = (row: unknown[], headers: Record<HeaderKey, number>): AuditReco
 
 export const parseAuditWorkbook = (buffer: ArrayBuffer, meta: DatasetMeta): AuditDataset => {
   const workbook = XLSX.read(buffer, { type: 'array', cellDates: true });
-  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  const sheetName = selectAuditSheetName(workbook, meta);
+  const sheet = workbook.Sheets[sheetName];
   const rows = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: null, blankrows: false });
   const headers = mapHeaders(rows);
   const missingHeaders = Object.entries(headers)

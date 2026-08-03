@@ -6,8 +6,10 @@ const TARGET_SHEET = 'POR TURNO';
 
 const detectShift = (row: unknown[]): ShiftCode | null => {
   const rowText = row.map((cell) => String(cell ?? '')).join(' ');
-  const match = rowText.match(/TURNO\s+([A-F])/i);
-  return match?.[1]?.toUpperCase() as ShiftCode | null;
+  const match = rowText.match(/TURNO\s+(GL|[A-G])/i);
+  if (!match?.[1]) return null;
+  const shift = match[1].toUpperCase();
+  return (shift === 'G' ? 'GL' : shift) as ShiftCode;
 };
 
 const isStopRow = (row: unknown[]) => String(row[0] ?? '').toLocaleUpperCase('es-AR').includes('SUP. TURNO');

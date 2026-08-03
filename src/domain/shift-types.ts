@@ -1,8 +1,8 @@
 import type { AuditRecord } from '../types/audit';
 
-export type ShiftCode = 'A' | 'B' | 'C' | 'D' | 'E' | 'F';
+export type ShiftCode = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'GL';
 
-export const SHIFT_CODES: ShiftCode[] = ['A', 'B', 'C', 'D', 'E', 'F'];
+export const SHIFT_CODES: ShiftCode[] = ['A', 'B', 'C', 'D', 'E', 'F', 'GL'];
 
 export interface ShiftMember {
   originalName: string;
