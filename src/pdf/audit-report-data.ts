@@ -6,13 +6,14 @@ import {
   getReasonCounts,
 } from '../services/metricsService';
 import {
+  getShiftOperatorSummaries,
   getShiftReasonCounts,
   getShiftSummariesByNoveltyVolume,
   getShiftsForReason,
 } from '../domain/shift-metrics';
 import type { AuditRecord, KpiSummary, OperatorSummary } from '../types/audit';
-import type { ShiftAuditRecord, ShiftCode, ShiftSummary } from '../domain/shift-types';
-import type { AuditReportKpis, AuditReportPayload, AuditReportScope } from './audit-report-types';
+import { SHIFT_CODES, type ShiftAuditRecord, type ShiftCode, type ShiftSummary } from '../domain/shift-types';
+import type { AuditReportKpis, AuditReportPayload, AuditReportScope, ShiftOperatorTable } from './audit-report-types';
 import { formatNumber, formatPercent } from '../utils/formatters';
 
 const REPORT_OPERATOR_ROWS = 20;
@@ -43,6 +44,12 @@ const getOperatorTableRows = (summaries: OperatorSummary[], minimumAudits: numbe
       return sampleResult || a.validatedRate - b.validatedRate || b.noveltyCount - a.noveltyCount || a.operator.localeCompare(b.operator, 'es');
     })
     .slice(0, REPORT_OPERATOR_ROWS);
+
+const getShiftOperatorTables = (records: ShiftAuditRecord[]): ShiftOperatorTable[] =>
+  SHIFT_CODES.map((shift) => ({
+    shift,
+    rows: getShiftOperatorSummaries(records, shift),
+  })).filter((table) => table.rows.length > 0);
 
 export const buildOperatorAuditReportPayload = ({
   periodLabel,
@@ -123,6 +130,7 @@ export const buildShiftAuditReportPayload = ({
       selectedReason: topReason,
       shiftsForReason: topReason ? getShiftsForReason(records, topReason).slice(0, 10) : [],
       tableRows: summaries.slice(0, REPORT_SHIFT_ROWS),
+      operatorTablesByShift: getShiftOperatorTables(records),
     },
   };
 };

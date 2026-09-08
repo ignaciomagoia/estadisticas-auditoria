@@ -4,7 +4,7 @@ import type {
   OperatorSummary,
   ReasonOperatorItem,
 } from '../types/audit';
-import type { ShiftReasonComparisonItem, ShiftReasonItem, ShiftSummary } from '../domain/shift-types';
+import type { ShiftCode, ShiftReasonComparisonItem, ShiftReasonItem, ShiftSummary } from '../domain/shift-types';
 
 export type AuditReportViewMode = 'operators' | 'shifts';
 export type AuditReportScope = 'executive' | 'detailed';
@@ -59,6 +59,12 @@ export interface AuditReportShiftPages {
   selectedReason: string | null;
   shiftsForReason: ShiftReasonComparisonItem[];
   tableRows: ShiftSummary[];
+  operatorTablesByShift: ShiftOperatorTable[];
+}
+
+export interface ShiftOperatorTable {
+  shift: ShiftCode;
+  rows: OperatorSummary[];
 }
 
 export interface ReportTableColumn<T> {

@@ -4,6 +4,7 @@ import type { AuditReportData, AuditReportShiftPages as AuditReportShiftPageData
 import { AuditReportFooter } from './AuditReportFooter';
 import { AuditReportHeader } from './AuditReportHeader';
 import { AuditReportTable } from './AuditReportTable';
+import { AuditReportShiftOperatorTables } from './AuditReportShiftOperatorTables';
 import { ChartPanel, CompactReasonTable, CountBarChart, StackedBarChart, type ReportBarItem, type ReportStackedBarItem } from './AuditReportCharts';
 import { reportColors, styles } from './audit-report-styles';
 import { formatNumber, formatPercent } from '../utils/formatters';
@@ -117,6 +118,8 @@ export const AuditReportShiftPages = ({ report }: { report: AuditReportData }) =
         <AuditReportTable columns={shiftColumns} rows={pages.tableRows} />
         <AuditReportFooter generatedAt={report.generatedAt} />
       </Page>
+
+      <AuditReportShiftOperatorTables report={report} />
     </>
   );
 };

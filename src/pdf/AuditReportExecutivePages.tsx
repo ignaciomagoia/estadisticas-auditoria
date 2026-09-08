@@ -5,6 +5,7 @@ import type { AuditReportData, ReportTableColumn } from './audit-report-types';
 import { AuditReportFooter } from './AuditReportFooter';
 import { AuditReportHeader } from './AuditReportHeader';
 import { AuditReportTable } from './AuditReportTable';
+import { AuditReportShiftOperatorTables } from './AuditReportShiftOperatorTables';
 import { ChartPanel, CompactReasonTable, CountBarChart, StackedBarChart, type ReportBarItem, type ReportStackedBarItem } from './AuditReportCharts';
 import { reportColors, styles } from './audit-report-styles';
 import { formatNumber, formatPercent } from '../utils/formatters';
@@ -100,6 +101,8 @@ export const AuditReportExecutivePages = ({ report }: { report: AuditReportData 
         )}
         <AuditReportFooter generatedAt={report.generatedAt} />
       </Page>
+
+      {!isOperatorReport ? <AuditReportShiftOperatorTables report={report} /> : null}
     </>
   );
 };

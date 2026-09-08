@@ -1,8 +1,7 @@
 import * as XLSX from 'xlsx';
 import type { AuditDataset, AuditRecord, DatasetMeta, ParsedAuditAction } from '../types/audit';
 
-const HEADER_ROW_INDEX = 1;
-const DATA_START_ROW_INDEX = 2;
+const HEADER_SEARCH_LIMIT = 8;
 
 const REQUIRED_HEADERS = {
   date: 'Fecha',
@@ -107,8 +106,7 @@ const parseDate = (value: unknown): Date | null => {
 
 const isEmptyRow = (row: unknown[]) => row.every((cell) => normalizeText(cell) === null);
 
-const mapHeaders = (rows: unknown[][]) => {
-  const headerRow = rows[HEADER_ROW_INDEX] ?? [];
+const mapHeadersFromRow = (headerRow: unknown[]) => {
   const headerMap = new Map<string, number>();
   headerRow.forEach((header, index) => headerMap.set(normalizeKey(header), index));
 
@@ -120,6 +118,21 @@ const mapHeaders = (rows: unknown[][]) => {
     acc[key as HeaderKey] = columnIndex ?? -1;
     return acc;
   }, {} as Record<HeaderKey, number>);
+};
+
+const countMappedHeaders = (headers: Record<HeaderKey, number>) => Object.values(headers).filter((index) => index >= 0).length;
+
+const mapHeaders = (rows: unknown[][]) => {
+  const candidates = rows.slice(0, HEADER_SEARCH_LIMIT).map((row, index) => ({
+    index,
+    headers: mapHeadersFromRow(row),
+  }));
+  const bestCandidate = candidates.sort((a, b) => countMappedHeaders(b.headers) - countMappedHeaders(a.headers))[0];
+
+  return {
+    headerRowIndex: bestCandidate?.index ?? 0,
+    headers: bestCandidate?.headers ?? mapHeadersFromRow([]),
+  };
 };
 
 const toRecord = (row: unknown[], headers: Record<HeaderKey, number>): AuditRecord | null => {
@@ -151,7 +164,7 @@ export const parseAuditWorkbook = (buffer: ArrayBuffer, meta: DatasetMeta): Audi
   const sheetName = selectAuditSheetName(workbook, meta);
   const sheet = workbook.Sheets[sheetName];
   const rows = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: null, blankrows: false });
-  const headers = mapHeaders(rows);
+  const { headers, headerRowIndex } = mapHeaders(rows);
   const missingHeaders = Object.entries(headers)
     .filter(([, index]) => index < 0)
     .map(([key]) => REQUIRED_HEADERS[key as HeaderKey]);
@@ -161,7 +174,7 @@ export const parseAuditWorkbook = (buffer: ArrayBuffer, meta: DatasetMeta): Audi
   }
 
   const records = rows
-    .slice(DATA_START_ROW_INDEX)
+    .slice(headerRowIndex + 1)
     .filter((row) => !isEmptyRow(row))
     .map((row) => toRecord(row, headers))
     .filter((record): record is AuditRecord => Boolean(record));
