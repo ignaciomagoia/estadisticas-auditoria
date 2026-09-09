@@ -26,7 +26,7 @@ export const AUGUST_2026_OPERATOR_SHIFTS: Record<string, ShiftCode> = {
   'Joaquin Martinez': 'A',
   'Sasha Ochoa': 'A',
   'Florencia Micaela Ojeda': 'A',
-  'Valentina Palmieri': 'A',
+  'Erika Aguirre': 'A',
   'Morena Quintero': 'A',
   'Brenda Romero': 'A',
   'Lisandro Rosales': 'A',
@@ -65,7 +65,7 @@ export const AUGUST_2026_OPERATOR_SHIFTS: Record<string, ShiftCode> = {
   'Juan Santoro': 'C',
   'Rocio Schule': 'C',
   'Gabriel Aguilar': 'C',
-  'Erika Aguirre': 'C',
+  'Valentina Palmieri': 'C',
   'Malena Arreguez': 'C',
   'Luis Baigorria': 'C',
   'Gonzalo Canut': 'C',
@@ -117,8 +117,8 @@ export const AUGUST_2026_OPERATOR_SHIFTS: Record<string, ShiftCode> = {
   'Nadia Muscarello': 'D',
   'Wilda Ponce': 'D',
   'Erick Enguelberg': 'D',
-  'Iva Merlo': 'D',
-  'Fernanda Cueva': 'D',
+  'Mateo Acosta': 'D',
+  'Santiago Alba': 'D',
 
   'Bruno Martinez': 'E',
   'Maximiliano Ortiz': 'E',
@@ -126,7 +126,6 @@ export const AUGUST_2026_OPERATOR_SHIFTS: Record<string, ShiftCode> = {
   'Victor Vazquez': 'E',
   'Ruben Ochoa': 'E',
   'Yazmin Abrego': 'E',
-  'Mateo Acosta': 'E',
   'Julieta Aguirre': 'E',
   'Luciana Antunez': 'E',
   'Facundo Barrionuevo': 'E',
@@ -148,6 +147,7 @@ export const AUGUST_2026_OPERATOR_SHIFTS: Record<string, ShiftCode> = {
   'Agustin Lazarte': 'E',
   'Daniela Gonzalez': 'E',
   'Carla Lopez': 'E',
+  'Paula Podboraczynski': 'E',
 
   'Gabriel Aguirre': 'F',
   'Nicole Gutierrez': 'F',
@@ -155,7 +155,6 @@ export const AUGUST_2026_OPERATOR_SHIFTS: Record<string, ShiftCode> = {
   'Santiago Repiso': 'F',
   'Damaris Belen': 'F',
   'Abril Acosta': 'F',
-  'Santiago Alba': 'F',
   'Noelia Araya': 'F',
   'Elodina Barrera': 'F',
   'Antonella Chavez': 'F',
@@ -170,7 +169,6 @@ export const AUGUST_2026_OPERATOR_SHIFTS: Record<string, ShiftCode> = {
   'Daiana Mansutti': 'F',
   'Dafne Molina': 'F',
   'Alan Olivera': 'F',
-  'Paula Podboraczynski': 'F',
   'Nahuel Ribaudo': 'F',
   'Constanza Roldan': 'F',
   'Maximiliano Saravia': 'F',
@@ -184,6 +182,7 @@ export const AUGUST_2026_OPERATOR_SHIFTS: Record<string, ShiftCode> = {
   'Nadia Segura': 'GL',
   'Estefania Ybanez': 'GL',
   'Merlo Dan': 'GL',
+  'Ivan Merlo': 'GL',
 };
 
 export const getAugust2026ShiftMembers = (): ShiftMember[] =>

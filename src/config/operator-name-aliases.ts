@@ -1,6 +1,8 @@
 export const OPERATOR_NAME_ALIASES: Record<string, string> = {
   // "nombre normalizado de auditorias": "nombre normalizado canonico"
   'antonela cueva': 'antonella cueva',
+  'cueva fernanda': 'antonella cueva',
+  'iva merlo': 'ivan merlo',
   'agustina clausich': 'agustina claucich',
   'ledesma mia': 'ledezma mia',
   'chingolo valentina': 'alma chiingolo valentina',
