@@ -8,7 +8,8 @@ export const OPERATOR_NAME_ALIASES: Record<string, string> = {
   'chingolo valentina': 'alma chiingolo valentina',
   'rocio schule': 'rocio shole',
   'jessica maldonado': 'jesica maldonado',
-  'lopez yesica': 'jesica lopez',
+  'jesica lopez': 'yesica lopez',
+  'lopez yesica': 'yesica lopez',
   'gapar rafael': 'astigueta gaspar rafael',
   'barrrionuevo franco': 'barrionuevo franco',
 };
