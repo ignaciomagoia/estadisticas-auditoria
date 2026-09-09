@@ -162,6 +162,10 @@ export const styles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: '#ffffff',
   },
+  chartPanelFull: {
+    width: '100%',
+    marginRight: 0,
+  },
   chartTitle: {
     fontSize: 10,
     fontWeight: 700,

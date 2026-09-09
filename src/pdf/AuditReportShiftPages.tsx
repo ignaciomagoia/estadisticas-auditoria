@@ -63,50 +63,55 @@ export const AuditReportShiftPages = ({ report }: { report: AuditReportData }) =
 
   const reasonItems = toReasonItems(pages);
   const shiftReasonItems = toShiftReasonItems(pages.shiftsForReason);
+  const isSingleShiftReport = pages.isSingleShiftReport;
 
   return (
     <>
-      <Page size="A4" orientation="landscape" style={styles.page}>
-        <AuditReportHeader periodLabel={report.periodLabel} />
-        <Text style={styles.sectionTitle}>Resultados principales</Text>
-        <View style={styles.chartGrid}>
-          <ChartPanel title="Porcentaje validado por turno">
-            <StackedBarChart
-              items={toValidationItems(pages.validationByShift)}
-              legend={[
-                { label: 'Validado', color: reportColors.teal },
-                { label: 'Corregido u observado', color: reportColors.amber },
-              ]}
-            />
-          </ChartPanel>
-          <ChartPanel title="Correcciones y observaciones por turno">
-            <StackedBarChart
-              items={toNoveltyItems(pages.noveltyVolumeByShift)}
-              legend={[
-                { label: 'Corregidos', color: reportColors.sky },
-                { label: 'Observados', color: reportColors.red },
-              ]}
-            />
-          </ChartPanel>
-        </View>
-        <AuditReportFooter generatedAt={report.generatedAt} />
-      </Page>
+      {!isSingleShiftReport ? (
+        <Page size="A4" orientation="landscape" style={styles.page}>
+          <AuditReportHeader periodLabel={report.periodLabel} />
+          <Text style={styles.sectionTitle}>Resultados principales</Text>
+          <View style={styles.chartGrid}>
+            <ChartPanel title="Porcentaje validado por turno">
+              <StackedBarChart
+                items={toValidationItems(pages.validationByShift)}
+                legend={[
+                  { label: 'Validado', color: reportColors.teal },
+                  { label: 'Corregido u observado', color: reportColors.amber },
+                ]}
+              />
+            </ChartPanel>
+            <ChartPanel title="Correcciones y observaciones por turno">
+              <StackedBarChart
+                items={toNoveltyItems(pages.noveltyVolumeByShift)}
+                legend={[
+                  { label: 'Corregidos', color: reportColors.sky },
+                  { label: 'Observados', color: reportColors.red },
+                ]}
+              />
+            </ChartPanel>
+          </View>
+          <AuditReportFooter generatedAt={report.generatedAt} />
+        </Page>
+      ) : null}
 
       <Page size="A4" orientation="landscape" style={styles.page}>
         <AuditReportHeader periodLabel={report.periodLabel} />
         <Text style={styles.sectionTitle}>Motivos de correccion</Text>
         <View style={styles.chartGrid}>
-          <ChartPanel title={pages.selectedShift ? `Motivos por ${shiftLabel(pages.selectedShift)}` : 'Motivos por turno'}>
+          <ChartPanel fullWidth={isSingleShiftReport} title={pages.selectedShift ? `Motivos por ${shiftLabel(pages.selectedShift)}` : 'Motivos por turno'}>
             <CountBarChart items={reasonItems} />
             <CompactReasonTable items={reasonItems} percentLabel="% novedades" />
           </ChartPanel>
-          <ChartPanel
-            title={pages.selectedReason ? `Comparacion por motivo: ${pages.selectedReason}` : 'Comparacion de turnos por motivo'}
-            subtitle="Porcentaje calculado sobre auditorias totales del turno."
-          >
-            <CountBarChart items={shiftReasonItems} />
-            <CompactReasonTable items={shiftReasonItems} percentLabel="% auditorias" />
-          </ChartPanel>
+          {!isSingleShiftReport ? (
+            <ChartPanel
+              title={pages.selectedReason ? `Comparacion por motivo: ${pages.selectedReason}` : 'Comparacion de turnos por motivo'}
+              subtitle="Porcentaje calculado sobre auditorias totales del turno."
+            >
+              <CountBarChart items={shiftReasonItems} />
+              <CompactReasonTable items={shiftReasonItems} percentLabel="% auditorias" />
+            </ChartPanel>
+          ) : null}
         </View>
         <AuditReportFooter generatedAt={report.generatedAt} />
       </Page>

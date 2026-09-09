@@ -121,12 +121,14 @@ export const ChartPanel = ({
   title,
   subtitle,
   children,
+  fullWidth = false,
 }: {
   title: string;
   subtitle?: string;
   children: ReactNode;
+  fullWidth?: boolean;
 }) => (
-  <View style={styles.chartPanel}>
+  <View style={fullWidth ? [styles.chartPanel, styles.chartPanelFull] : styles.chartPanel}>
     <Text style={styles.chartTitle}>{title}</Text>
     {subtitle ? <Text style={styles.sectionSubtitle}>{subtitle}</Text> : null}
     {children}

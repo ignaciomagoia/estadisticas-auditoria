@@ -65,6 +65,7 @@ const shiftColumns: Array<ReportTableColumn<ShiftSummary>> = [
 
 export const AuditReportExecutivePages = ({ report }: { report: AuditReportData }) => {
   const isOperatorReport = report.viewMode === 'operators';
+  const isSingleShiftReport = !isOperatorReport && Boolean(report.shiftPages?.isSingleShiftReport);
   const reasonItems = isOperatorReport ? operatorReasonItems(report) : shiftReasonItems(report);
 
   return (
@@ -73,16 +74,21 @@ export const AuditReportExecutivePages = ({ report }: { report: AuditReportData 
         <AuditReportHeader periodLabel={report.periodLabel} />
         <Text style={styles.sectionTitle}>Resultados principales</Text>
         <View style={styles.chartGrid}>
-          <ChartPanel title={isOperatorReport ? 'Operadores con menor porcentaje validado' : 'Porcentaje validado por turno'}>
-            <StackedBarChart
-              items={isOperatorReport ? toOperatorValidationItems(report.operatorPages?.lowestValidation ?? []) : toShiftValidationItems(report.shiftPages?.validationByShift ?? [])}
-              legend={[
-                { label: 'Validado', color: reportColors.teal },
-                { label: 'Corregido u observado', color: reportColors.amber },
-              ]}
-            />
-          </ChartPanel>
-          <ChartPanel title={isOperatorReport ? 'Motivos de correccion mas frecuentes' : `Motivos de correccion ${report.shiftPages?.selectedShift ? `del Turno ${report.shiftPages.selectedShift}` : ''}`}>
+          {!isSingleShiftReport ? (
+            <ChartPanel title={isOperatorReport ? 'Operadores con menor porcentaje validado' : 'Porcentaje validado por turno'}>
+              <StackedBarChart
+                items={isOperatorReport ? toOperatorValidationItems(report.operatorPages?.lowestValidation ?? []) : toShiftValidationItems(report.shiftPages?.validationByShift ?? [])}
+                legend={[
+                  { label: 'Validado', color: reportColors.teal },
+                  { label: 'Corregido u observado', color: reportColors.amber },
+                ]}
+              />
+            </ChartPanel>
+          ) : null}
+          <ChartPanel
+            fullWidth={isSingleShiftReport}
+            title={isOperatorReport ? 'Motivos de correccion mas frecuentes' : `Motivos de correccion ${report.shiftPages?.selectedShift ? `del Turno ${report.shiftPages.selectedShift}` : ''}`}
+          >
             <CountBarChart items={reasonItems} />
             <CompactReasonTable items={reasonItems} percentLabel="% novedades" />
           </ChartPanel>

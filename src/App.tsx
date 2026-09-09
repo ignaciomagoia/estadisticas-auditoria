@@ -131,6 +131,7 @@ const App = () => {
       records: filteredShiftRecordsForReport,
       summaries: shiftSummariesForReport,
       reportScope: dashboardMode,
+      isSingleShiftReport: Boolean(effectiveShiftFilters.shift),
     });
   }, [
     analysisMode,

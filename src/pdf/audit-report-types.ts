@@ -52,6 +52,7 @@ export interface AuditReportOperatorPages {
 }
 
 export interface AuditReportShiftPages {
+  isSingleShiftReport: boolean;
   validationByShift: ShiftSummary[];
   noveltyVolumeByShift: ShiftSummary[];
   selectedShift: string | null;

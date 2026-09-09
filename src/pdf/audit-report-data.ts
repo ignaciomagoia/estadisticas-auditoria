@@ -102,6 +102,7 @@ export const buildShiftAuditReportPayload = ({
   records,
   summaries,
   reportScope,
+  isSingleShiftReport,
 }: {
   periodLabel: string;
   filtersSummary: string[];
@@ -109,6 +110,7 @@ export const buildShiftAuditReportPayload = ({
   records: ShiftAuditRecord[];
   summaries: ShiftSummary[];
   reportScope: AuditReportScope;
+  isSingleShiftReport: boolean;
 }): AuditReportPayload => {
   const selectedShift = summaries[0]?.shift ?? null;
   const topReason = getReasonCounts(records)[0]?.label ?? null;
@@ -123,6 +125,7 @@ export const buildShiftAuditReportPayload = ({
     kpis: reportKpis,
     summaryLines: getObjectiveSummaryLines(reportKpis, topReason),
     shiftPages: {
+      isSingleShiftReport,
       validationByShift: summaries.slice(0, 10),
       noveltyVolumeByShift: getShiftSummariesByNoveltyVolume(records).slice(0, 10),
       selectedShift,
