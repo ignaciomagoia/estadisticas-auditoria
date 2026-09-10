@@ -153,6 +153,10 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     marginRight: -10,
   },
+  chartColumn: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
   chartPanel: {
     width: '50%',
     marginRight: 10,
@@ -176,6 +180,10 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 6,
+  },
+  chartRows: {
+    display: 'flex',
+    flexDirection: 'column',
   },
   chartLabel: {
     width: 116,

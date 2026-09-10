@@ -21,6 +21,20 @@ const downloadBlob = (blob: Blob, fileName: string) => {
   window.setTimeout(() => URL.revokeObjectURL(url), 500);
 };
 
+const getReportRenderKey = (report: AuditReportData) =>
+  [
+    report.periodLabel,
+    report.viewMode,
+    report.reportScope,
+    report.filtersSummary.join('|'),
+    report.kpis.totalAudits,
+    report.kpis.validCount,
+    report.kpis.correctedCount,
+    report.kpis.observedCount,
+    report.shiftPages?.selectedShift ?? '',
+    report.shiftPages?.reasonsBySelectedShift.map((reason) => `${reason.label}:${reason.count}`).join('|') ?? '',
+  ].join('::');
+
 export const DownloadAuditReportButton = ({ report, fileName, disabled = false }: DownloadAuditReportButtonProps) => {
   const [downloadError, setDownloadError] = useState<string | null>(null);
 
@@ -46,7 +60,7 @@ export const DownloadAuditReportButton = ({ report, fileName, disabled = false }
   }
 
   return (
-    <BlobProvider document={<AuditReportDocument report={reportDocumentData} />}>
+    <BlobProvider key={getReportRenderKey(reportDocumentData)} document={<AuditReportDocument report={reportDocumentData} />}>
       {({ blob, loading, error }) => {
         const isDisabled = disabled || loading || !blob || Boolean(error);
 

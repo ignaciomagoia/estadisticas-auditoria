@@ -45,7 +45,7 @@ export const StackedBarChart = ({
   if (items.length === 0) return <Text style={styles.emptyState}>Sin datos suficientes para mostrar.</Text>;
 
   return (
-    <>
+    <View style={styles.chartRows}>
       <Legend segments={legend} />
       {items.map((item) => (
         <View key={item.label} style={styles.chartRow} wrap={false}>
@@ -65,7 +65,7 @@ export const StackedBarChart = ({
           <Text style={styles.chartValue}>{item.valueLabel}</Text>
         </View>
       ))}
-    </>
+    </View>
   );
 };
 
@@ -75,7 +75,7 @@ export const CountBarChart = ({ items }: { items: ReportBarItem[] }) => {
   const maxCount = Math.max(...items.map((item) => item.count), 1);
 
   return (
-    <>
+    <View style={styles.chartRows}>
       {items.map((item) => (
         <View key={item.label} style={styles.chartRow} wrap={false}>
           <Text style={styles.chartLabel}>{item.label}</Text>
@@ -91,7 +91,7 @@ export const CountBarChart = ({ items }: { items: ReportBarItem[] }) => {
           <Text style={styles.chartValue}>{formatNumber(item.count)}</Text>
         </View>
       ))}
-    </>
+    </View>
   );
 };
 

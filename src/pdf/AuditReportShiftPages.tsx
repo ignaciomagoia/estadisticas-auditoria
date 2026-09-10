@@ -34,7 +34,7 @@ const toNoveltyItems = (rows: ShiftSummary[]): ReportStackedBarItem[] => {
 };
 
 const toReasonItems = (pages: AuditReportShiftPageData): ReportBarItem[] =>
-  pages.reasonsBySelectedShift.map((reason) => ({
+  pages.reasonsBySelectedShift.slice(0, 10).map((reason) => ({
     label: reason.label,
     count: reason.count,
     percent: reason.percentOfNovelties,
@@ -98,10 +98,10 @@ export const AuditReportShiftPages = ({ report }: { report: AuditReportData }) =
       <Page size="A4" orientation="landscape" style={styles.page}>
         <AuditReportHeader periodLabel={report.periodLabel} />
         <Text style={styles.sectionTitle}>Motivos de correccion</Text>
-        <View style={styles.chartGrid}>
+        <View style={isSingleShiftReport ? styles.chartColumn : styles.chartGrid}>
           <ChartPanel fullWidth={isSingleShiftReport} title={pages.selectedShift ? `Motivos por ${shiftLabel(pages.selectedShift)}` : 'Motivos por turno'}>
             <CountBarChart items={reasonItems} />
-            <CompactReasonTable items={reasonItems} percentLabel="% novedades" />
+            {!isSingleShiftReport ? <CompactReasonTable items={reasonItems} percentLabel="% novedades" /> : null}
           </ChartPanel>
           {!isSingleShiftReport ? (
             <ChartPanel
