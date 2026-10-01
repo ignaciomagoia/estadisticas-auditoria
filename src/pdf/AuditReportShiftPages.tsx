@@ -116,13 +116,15 @@ export const AuditReportShiftPages = ({ report }: { report: AuditReportData }) =
         <AuditReportFooter generatedAt={report.generatedAt} />
       </Page>
 
-      <Page size="A4" orientation="landscape" style={styles.page}>
-        <AuditReportHeader periodLabel={report.periodLabel} />
-        <Text style={styles.sectionTitle}>Tabla resumen por turno</Text>
-        <Text style={styles.sectionSubtitle}>Incluye las primeras {formatNumber(pages.tableRows.length)} filas segun el orden actual del dashboard.</Text>
-        <AuditReportTable columns={shiftColumns} rows={pages.tableRows} />
-        <AuditReportFooter generatedAt={report.generatedAt} />
-      </Page>
+      {!isSingleShiftReport ? (
+        <Page size="A4" orientation="landscape" style={styles.page}>
+          <AuditReportHeader periodLabel={report.periodLabel} />
+          <Text style={styles.sectionTitle}>Tabla resumen por turno</Text>
+          <Text style={styles.sectionSubtitle}>Incluye las primeras {formatNumber(pages.tableRows.length)} filas segun el orden actual del dashboard.</Text>
+          <AuditReportTable columns={shiftColumns} rows={pages.tableRows} />
+          <AuditReportFooter generatedAt={report.generatedAt} />
+        </Page>
+      ) : null}
 
       <AuditReportShiftOperatorTables report={report} />
     </>

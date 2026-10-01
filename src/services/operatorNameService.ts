@@ -1,5 +1,7 @@
 import { getAugust2026ShiftMembers } from '../config/august-2026-operator-shifts';
 import { getJuly2026ShiftMembers } from '../config/july-2026-operator-shifts';
+import { SEPTEMBER_2026_OPERATOR_NAME_ALIASES } from '../config/september-2026-operator-name-aliases';
+import { getSeptember2026ShiftMembers } from '../config/september-2026-operator-shifts';
 import { OPERATOR_NAME_ALIASES } from '../config/operator-name-aliases';
 import type { ShiftMember } from '../domain/shift-types';
 import type { AuditDataset, AuditRecord, DatasetMeta } from '../types/audit';
@@ -7,6 +9,7 @@ import { areShortNameTokensContained, normalizePersonName } from '../utils/norma
 
 const isJuly2026 = (meta: DatasetMeta | null) => meta?.year === 2026 && meta.month === 7;
 const isAugust2026 = (meta: DatasetMeta | null) => meta?.year === 2026 && meta.month === 8;
+const isSeptember2026 = (meta: DatasetMeta | null) => meta?.year === 2026 && meta.month === 9;
 
 const toDisplayNameFromNormalizedKey = (normalizedName: string) =>
   normalizedName
@@ -18,8 +21,11 @@ const toDisplayNameFromNormalizedKey = (normalizedName: string) =>
 const getPeriodMembers = (meta: DatasetMeta | null) => {
   if (isJuly2026(meta)) return getJuly2026ShiftMembers();
   if (isAugust2026(meta)) return getAugust2026ShiftMembers();
+  if (isSeptember2026(meta)) return getSeptember2026ShiftMembers();
   return [];
 };
+
+const getPeriodAliases = (meta: DatasetMeta | null) => (isSeptember2026(meta) ? { ...OPERATOR_NAME_ALIASES, ...SEPTEMBER_2026_OPERATOR_NAME_ALIASES } : OPERATOR_NAME_ALIASES);
 
 const findUniqueByNormalizedName = (normalizedName: string, members: ShiftMember[]) => {
   const candidates = members.filter((member) => member.normalizedName === normalizedName);
@@ -37,10 +43,10 @@ export const getCanonicalOperatorName = (operatorName: string, meta: DatasetMeta
   const cleanedOperatorName = operatorName.trim().replace(/\s+/g, ' ');
   const normalizedOperatorName = normalizePersonName(cleanedOperatorName);
   const members = getPeriodMembers(meta);
-  const aliasTarget = OPERATOR_NAME_ALIASES[normalizedOperatorName];
+  const aliasTarget = getPeriodAliases(meta)[normalizedOperatorName];
 
   if (aliasTarget) {
-    const aliasCandidate = findUniqueByNormalizedName(aliasTarget, members);
+    const aliasCandidate = findUniqueByNormalizedName(normalizePersonName(aliasTarget), members);
     if (aliasCandidate) return aliasCandidate.originalName;
   }
 

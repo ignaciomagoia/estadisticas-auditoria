@@ -1,5 +1,6 @@
 import { getAugust2026ShiftRoster } from '../config/august-2026-operator-shifts';
 import { getJuly2026ShiftRoster } from '../config/july-2026-operator-shifts';
+import { getSeptember2026ShiftRoster } from '../config/september-2026-operator-shifts';
 import { parseShiftRosterWorkbook } from '../data/shiftRosterParser';
 import type { ShiftRoster } from '../domain/shift-types';
 import type { DatasetMeta } from '../types/audit';
@@ -8,6 +9,7 @@ export const LEGACY_SHIFT_ROSTER_PATH = '/data/turnos/nomina-turnos.xlsx';
 
 const isJuly2026 = (period: DatasetMeta | null) => period?.year === 2026 && period.month === 7;
 const isAugust2026 = (period: DatasetMeta | null) => period?.year === 2026 && period.month === 8;
+const isSeptember2026 = (period: DatasetMeta | null) => period?.year === 2026 && period.month === 9;
 
 const loadLegacyShiftRoster = async (): Promise<ShiftRoster> => {
   const response = await fetch(LEGACY_SHIFT_ROSTER_PATH);
@@ -22,5 +24,6 @@ const loadLegacyShiftRoster = async (): Promise<ShiftRoster> => {
 export const loadShiftRoster = async (period: DatasetMeta | null): Promise<ShiftRoster> => {
   if (isJuly2026(period)) return getJuly2026ShiftRoster();
   if (isAugust2026(period)) return getAugust2026ShiftRoster();
+  if (isSeptember2026(period)) return getSeptember2026ShiftRoster();
   return loadLegacyShiftRoster();
 };

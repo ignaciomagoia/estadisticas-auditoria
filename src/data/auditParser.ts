@@ -18,6 +18,13 @@ const REQUIRED_HEADERS = {
 
 type HeaderKey = keyof typeof REQUIRED_HEADERS;
 
+const OPTIONAL_HEADERS_FROM_SEPTEMBER_2026: HeaderKey[] = ['sourceMedium', 'affectedSystem'];
+
+const supportsReducedSchema = (meta: DatasetMeta) =>
+  meta.year !== undefined && meta.month !== undefined && (meta.year > 2026 || (meta.year === 2026 && meta.month >= 9));
+
+const isOptionalHeaderForPeriod = (key: HeaderKey, meta: DatasetMeta) => supportsReducedSchema(meta) && OPTIONAL_HEADERS_FROM_SEPTEMBER_2026.includes(key);
+
 const HEADER_MATCHES: Record<HeaderKey, string[]> = {
   date: ['fecha'],
   auditor: ['auditor'],
@@ -49,9 +56,16 @@ const selectAuditSheetName = (workbook: XLSX.WorkBook, meta: DatasetMeta) => {
   const visibleSheetNames = getVisibleSheetNames(workbook);
   const candidateSheetNames = visibleSheetNames.length ? visibleSheetNames : workbook.SheetNames;
   const expectedSheetName = normalizeKey(meta.monthLabel);
+  const expectedMonth = expectedSheetName.split(' ')[0];
+  const expectedYear = String(meta.year ?? '');
+  const expectedShortYear = expectedYear.slice(-2);
   const matchingSheetName =
     candidateSheetNames.find((sheetName) => normalizeKey(sheetName) === expectedSheetName) ??
-    candidateSheetNames.find((sheetName) => normalizeKey(sheetName).includes(expectedSheetName));
+    candidateSheetNames.find((sheetName) => normalizeKey(sheetName).includes(expectedSheetName)) ??
+    candidateSheetNames.find((sheetName) => {
+      const sheetNameTokens = normalizeKey(sheetName).split(' ');
+      return sheetNameTokens.includes(expectedMonth) && (sheetNameTokens.includes(expectedYear) || sheetNameTokens.includes(expectedShortYear));
+    });
 
   return matchingSheetName ?? candidateSheetNames[0];
 };
@@ -166,7 +180,7 @@ export const parseAuditWorkbook = (buffer: ArrayBuffer, meta: DatasetMeta): Audi
   const rows = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: null, blankrows: false });
   const { headers, headerRowIndex } = mapHeaders(rows);
   const missingHeaders = Object.entries(headers)
-    .filter(([, index]) => index < 0)
+    .filter(([key, index]) => index < 0 && !isOptionalHeaderForPeriod(key as HeaderKey, meta))
     .map(([key]) => REQUIRED_HEADERS[key as HeaderKey]);
 
   if (missingHeaders.length > 0) {

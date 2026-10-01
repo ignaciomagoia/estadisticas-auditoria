@@ -1,0 +1,25 @@
+// Sólo incluye equivalencias comprobables contra la nómina de septiembre.
+// Los valores conservan el nombre original de la nómina; se normalizan al usarlos.
+export const SEPTEMBER_2026_OPERATOR_NAME_ALIASES: Record<string, string> = {
+  'antonella cueva': 'CUEVA Fernanda',
+  'antonela cueva': 'CUEVA Fernanda',
+  'erika gutierrez': 'GUTIERREZ Erica Rocio',
+  'martina torres': 'TORRES LEDEZMA Martna Sofia',
+  'martinatorres': 'TORRES LEDEZMA Martna Sofia',
+  'torres martina': 'TORRES LEDEZMA Martna Sofia',
+  'antonella difrancesca': 'DI FRANCESCA Anotonella',
+  'difrancesca antonella': 'DI FRANCESCA Anotonella',
+  'antonela difrancesca': 'DI FRANCESCA Anotonella',
+  'debora juarez': 'JUAREZ Deborah',
+  'farias ian': 'FRIAS PINO Ian',
+  'jesica lopez': 'LOPEZ Yesica Andrea',
+  'lopez yesica': 'LOPEZ Yesica Andrea',
+  'luisana unamunuo': 'UNAMUNU MANSILLA Luisana',
+  'chazaretta josue': 'CHAZARRETA Josué',
+  'chazaretta jouse': 'CHAZARRETA Josué',
+  'ignacio marini': 'MARINO Ignacio',
+  'marini ignacio': 'MARINO Ignacio',
+  'gutierrezj nicole': 'GUTIERREZ Nicolle',
+  'pilar zalzar': 'ZALAZAR TORRES Pilar Agustina',
+  'gaspar rafael': 'Gaspar Astigueta',
+};

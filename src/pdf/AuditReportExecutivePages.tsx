@@ -96,17 +96,19 @@ export const AuditReportExecutivePages = ({ report }: { report: AuditReportData 
         <AuditReportFooter generatedAt={report.generatedAt} />
       </Page>
 
-      <Page size="A4" orientation="landscape" style={styles.page}>
-        <AuditReportHeader periodLabel={report.periodLabel} />
-        <Text style={styles.sectionTitle}>{isOperatorReport ? 'Tabla resumen por operador' : 'Tabla resumen por turno'}</Text>
-        <Text style={styles.sectionSubtitle}>{isOperatorReport ? 'Incluye las primeras 10 filas de la vista ejecutiva.' : 'Incluye todos los turnos disponibles.'}</Text>
-        {isOperatorReport ? (
-          <AuditReportTable columns={operatorColumns} rows={(report.operatorPages?.tableRows ?? []).slice(0, 10)} />
-        ) : (
-          <AuditReportTable columns={shiftColumns} rows={report.shiftPages?.tableRows ?? []} />
-        )}
-        <AuditReportFooter generatedAt={report.generatedAt} />
-      </Page>
+      {!isSingleShiftReport ? (
+        <Page size="A4" orientation="landscape" style={styles.page}>
+          <AuditReportHeader periodLabel={report.periodLabel} />
+          <Text style={styles.sectionTitle}>{isOperatorReport ? 'Tabla resumen por operador' : 'Tabla resumen por turno'}</Text>
+          <Text style={styles.sectionSubtitle}>{isOperatorReport ? 'Incluye las primeras 10 filas de la vista ejecutiva.' : 'Incluye todos los turnos disponibles.'}</Text>
+          {isOperatorReport ? (
+            <AuditReportTable columns={operatorColumns} rows={(report.operatorPages?.tableRows ?? []).slice(0, 10)} />
+          ) : (
+            <AuditReportTable columns={shiftColumns} rows={report.shiftPages?.tableRows ?? []} />
+          )}
+          <AuditReportFooter generatedAt={report.generatedAt} />
+        </Page>
+      ) : null}
 
       {!isOperatorReport ? <AuditReportShiftOperatorTables report={report} /> : null}
     </>
